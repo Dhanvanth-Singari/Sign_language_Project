@@ -1,0 +1,5 @@
+# Helper note:
+# If you have a video (e.g., /mnt/data/W23P55.mp4), you can run:
+#   python backend/track3_frame_generation/run_track3.py --video /mnt/data/W23P55.mp4 --target_img backend/track3_frame_generation/target_images/target.png --word_name hello
+#
+# Make sure you place a target image at the given path before running.

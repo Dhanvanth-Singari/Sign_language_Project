@@ -1,0 +1,18 @@
+# Core
+opencv-python
+numpy
+Pillow
+matplotlib
+tqdm
+
+# Pose extraction
+mediapipe
+
+# Diffusion / ControlNet
+torch
+torchvision
+transformers
+diffusers>=0.27.0
+accelerate
+safetensors
+controlnet-aux>=0.0.7
