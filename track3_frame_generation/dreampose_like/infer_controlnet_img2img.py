@@ -30,7 +30,8 @@ def build_pipelines(device, sd_model, controlnet_model, dtype):
     pipe = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(
     sd_model,
     controlnet=controlnet,
-    torch_dtype=torch.float32
+    # torch_dtype=torch.float32
+    torch_dtype=torch.float16
 )
 
     pipe.to(device)
