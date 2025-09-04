@@ -28,16 +28,33 @@ def train_encoder(data_path, num_classes, epochs=10, batch_size=4):
         epoch_loss, epoch_acc = 0, 0
         model.train()
 
-        for frames, labels in dataloader:
+        for batch, labels in dataloader:
+            batch = batch.to(device)
             labels = labels.to(device)
 
-            mid_idx = frames.shape[2] // 2
-            mid_frames = frames[:, :, mid_idx, :, :]
+            # Split body, left, right
+            C = batch.shape[1] // 3
+            body = batch[:, :C, :, :, :]
+            left = batch[:, C:2*C, :, :, :]
+            right = batch[:, 2*C:, :, :, :]
 
-            pil_imgs = [Image.fromarray((f.permute(1,2,0).cpu().numpy()*255).astype(np.uint8)) for f in mid_frames]
-            embeddings = extract_embeddings(pil_imgs).to(device)
+            mid_idx = body.shape[2] // 2
+            body_mid = body[:, :, mid_idx, :, :]
+            left_mid = left[:, :, mid_idx, :, :]
+            right_mid = right[:, :, mid_idx, :, :]
 
-            preds = model(embeddings)
+            def to_pil(frames):
+                return [Image.fromarray((f.permute(1,2,0).cpu().numpy()*255).astype(np.uint8)) for f in frames]
+
+            body_pil = to_pil(body_mid)
+            left_pil = to_pil(left_mid)
+            right_pil = to_pil(right_mid)
+
+            body_embed = extract_embeddings(body_pil)
+            left_embed = extract_embeddings(left_pil)
+            right_embed = extract_embeddings(right_pil)
+
+            preds = model(body_embed, left_embed, right_embed)
             loss = criterion(preds, labels)
 
             optimizer.zero_grad()
@@ -47,8 +64,8 @@ def train_encoder(data_path, num_classes, epochs=10, batch_size=4):
             epoch_loss += loss.item()
             epoch_acc += accuracy_fn(preds, labels)
 
-        losses.append(epoch_loss/len(dataloader))
-        accs.append(epoch_acc/len(dataloader))
+        losses.append(epoch_loss / len(dataloader))
+        accs.append(epoch_acc / len(dataloader))
 
         print(f"Epoch [{epoch+1}/{epochs}] Loss={losses[-1]:.4f} Acc={accs[-1]:.4f}")
 
