@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@gradio/client": "^1.17.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
